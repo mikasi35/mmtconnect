@@ -1,16 +1,9 @@
 'use client';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { resolvePublicImage } from '@/lib/api';
+import { resolvePublicImage, API_BASE } from '@/lib/api';
 
-function normalizeApiBase(raw: string) {
-  const base = raw.trim().replace(/\/+$|\s+$/g, '');
-  if (/\/api\/v1$/i.test(base)) return base;
-  if (/\/api$/i.test(base)) return base.replace(/\/api$/i, '/api/v1');
-  return `${base}/api/v1`;
-}
-
-const API = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL ?? 'https://vacancies.mmtcare.com.au/api/v1');
+const API = API_BASE;
 
 const CARE_OPTIONS = [
   { key: 'personal_care',       label: 'Personal care',       icon: 'P' },

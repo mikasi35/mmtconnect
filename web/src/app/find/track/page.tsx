@@ -1,15 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE } from '@/lib/api';
 
-function normalizeApiBase(raw: string) {
-  const base = raw.trim().replace(/\/+$|\s+$/g, '');
-  if (/\/api\/v1$/i.test(base)) return base;
-  if (/\/api$/i.test(base)) return base.replace(/\/api$/i, '/api/v1');
-  return `${base}/api/v1`;
-}
-
-const API = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL ?? 'https://vacancies.mmtcare.com.au/api/v1');
+const API = API_BASE;
 
 const STATUS_INFO: Record<string, { label: string; desc: string; color: string; bg: string }> = {
   new:       { label: 'Received',    desc: 'Your referral has been received and is in our queue.',                         color: '#1E40AF', bg: '#DBEAFE' },

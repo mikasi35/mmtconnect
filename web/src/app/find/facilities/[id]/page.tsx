@@ -1,14 +1,8 @@
 import React from 'react';
 import { FacilityGallery } from '@/components/FacilityGallery';
+import { API_BASE } from '@/lib/api';
 
-function normalizeApiBase(raw: string) {
-  const base = raw.trim().replace(/\/+$|\s+$/g, '');
-  if (/\/api\/v1$/i.test(base)) return base;
-  if (/\/api$/i.test(base)) return base.replace(/\/api$/i, '/api/v1');
-  return `${base}/api/v1`;
-}
-
-const API = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL ?? 'https://vacancies.mmtcare.com.au/api/v1');
+const API = API_BASE;
 const CARE_LABELS: Record<string,string> = {
   personal_care: 'Personal care',
   nursing: 'Nursing support',

@@ -2,7 +2,15 @@
 //  MMT Care Connect — Web API Client
 // ============================================================
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+function normalizeApiBase(raw: string) {
+  const base = raw.trim().replace(/\/+$|\s+$/g, '');
+  if (/\/api\/v1$/i.test(base)) return base;
+  if (/\/api$/i.test(base)) return base.replace(/\/api$/i, '/api/v1');
+  return `${base}/api/v1`;
+}
+
+export const API_BASE = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1');
+const BASE = API_BASE;
 const API_HOST = (() => {
   try {
     const url = new URL(BASE);
