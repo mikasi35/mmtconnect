@@ -7,7 +7,8 @@
     "start:backend": "node dist/backend/src/server.js",
     "dev:backend": "ts-node --project tsconfig.json backend/src/server.ts",
     "db:migrate": "node scripts/db-sql.js scripts/migrate.sql",
-    "db:seed": "node scripts/db-sql.js scripts/seed.sql"
+    "db:seed": "node scripts/db-sql.js scripts/seed.sql",
+    "start": "node dist/backend/src/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
