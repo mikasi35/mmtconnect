@@ -1,19 +1,31 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool, PoolClient, PoolConfig } from 'pg';
 
 let pool: Pool;
 
 export function getPool(): Pool {
   if (!pool) {
-    pool = new Pool({
-      host:     process.env.DB_HOST     || 'localhost',
-      port:     parseInt(process.env.DB_PORT || '5432'),
-      database: process.env.DB_NAME     || 'mmt_care_connect',
-      user:     process.env.DB_USER     || 'postgres',
-      password: process.env.DB_PASS     || 'postgres',
-      max:      parseInt(process.env.DB_POOL_MAX || '10'),
+    const connectionString = process.env.DATABASE_URL;
+    const poolConfig: PoolConfig = {
+      max: parseInt(process.env.DB_POOL_MAX || '10'),
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
-    });
+    };
+
+    if (connectionString) {
+      poolConfig.connectionString = connectionString;
+    } else {
+      poolConfig.host = process.env.DB_HOST || 'localhost';
+      poolConfig.port = parseInt(process.env.DB_PORT || '5432');
+      poolConfig.database = process.env.DB_NAME || 'mmt_care_connect';
+      poolConfig.user = process.env.DB_USER || 'postgres';
+      poolConfig.password = process.env.DB_PASS || 'postgres';
+    }
+
+    if (process.env.DB_SSL === 'true') {
+      poolConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    pool = new Pool(poolConfig);
     pool.on('error', (err) => {
       console.error('Unexpected pool error:', err);
     });
