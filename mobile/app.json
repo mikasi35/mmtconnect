@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "MMT Care Connect",
+    "slug": "mmt-care-connect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#1A56CC"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mmt.careconnect"
+    },
+    "android": {
+      "package": "com.mmt.careconnect",
+      "adaptiveIcon": {
+        "backgroundColor": "#1A56CC"
+      },
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "MMT Care needs your location to show available NDIS accommodation near you.",
+          "locationWhenInUsePermission": "MMT Care needs your location to show available NDIS accommodation near you."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1A3A8F",
+          "defaultChannel": "vacancies",
+          "sounds": []
+        }
+      ]
+    ],
+    "scheme": "mmt",
+    "extra": {
+      "apiUrl": "http://localhost:4000/api/v1"
+    },
+    "newArchEnabled": true
+  }
+}
