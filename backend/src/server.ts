@@ -21,7 +21,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 app.use(cors({
-  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://vacancies.mmtcare.com.au').split(','),
+  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,exp://localhost:8081').split(','),
   credentials: true,
 }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));

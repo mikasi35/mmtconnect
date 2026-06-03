@@ -2,7 +2,7 @@
 //  MMT Care Connect — Web API Client
 // ============================================================
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://vacancies.mmtcare.com.au/api/v1';
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 const API_HOST = (() => {
   try {
     const url = new URL(BASE);
