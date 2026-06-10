@@ -11,8 +11,7 @@
     "types": ["node"],
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "ignoreDeprecations": "6.0"
+    "declaration": true
   },
   "include": ["backend/**/*", "shared/**/*"],
   "exclude": ["node_modules", "dist", "web", "mobile"]

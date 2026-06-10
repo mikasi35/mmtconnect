@@ -36,7 +36,7 @@ async function createRefreshToken(userId: string): Promise<string> {
 // POST /auth/register
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, organisation, phone } = req.body;
-  const role = 'admin';
+  const role = 'coordinator';
 
   if (!name || !email || !password) {
     throw new ValidationError('name, email and password are required');
@@ -85,8 +85,11 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
     [email.toLowerCase()]
   );
 
-  if (!row || !(await bcrypt.compare(password, row.password_hash))) {
-    throw new AppError('Invalid credentials', 401);
+  if (!row) {
+    throw new AppError('Email address not found. Please check and try again.', 401);
+  }
+  if (!(await bcrypt.compare(password, row.password_hash))) {
+    throw new AppError('Incorrect password. Please try again.', 401);
   }
   if (!row.is_active) throw new AppError('Account disabled. Contact support.', 403);
 
@@ -179,12 +182,42 @@ router.post('/forgot-password', asyncHandler(async (req: Request, res: Response)
     [user.id, hash, exp]
   );
 
-  // In production: send email with reset link containing `raw` token
-  // For now return the token so it can be tested / wired to email provider
+  // Send the email with the reset link
+  const { sendEmail, getPublicSiteUrl } = await import('../common/email');
+  const resetLink = `${getPublicSiteUrl()}/reset-password?token=${raw}`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Reset your password - MMT Care Connect',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2>Password Reset Request</h2>
+          <p>Hi,</p>
+          <p>We received a request to reset the password for your MMT Care Connect account.</p>
+          <p>Please click the button below to choose a new password:</p>
+          <p style="margin: 24px 0;">
+            <a href="${resetLink}" style="background: #1A56CC; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; display: inline-block;">Reset Password</a>
+          </p>
+          <p>Or copy and paste this link into your browser:</p>
+          <p>${resetLink}</p>
+          <p>This password reset link will expire in 1 hour.</p>
+          <p>If you did not request this, you can safely ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+          <p style="color: #666; fontSize: 12px;">MMT Care Connect Coordination Platform</p>
+        </div>
+      `
+    });
+  } catch (emailErr: any) {
+    console.error('Failed to send forgot password email:', emailErr.message);
+    if (process.env.NODE_ENV === 'production') {
+      throw new AppError('Failed to send reset email. Please try again later.', 500);
+    }
+  }
+
   res.json({
     data: {
       message: 'If that email exists, a reset link has been sent.',
-      // Remove `reset_token` in production — pass via email only
       reset_token: process.env.NODE_ENV === 'production' ? undefined : raw,
     },
   });

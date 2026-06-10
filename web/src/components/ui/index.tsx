@@ -24,6 +24,98 @@ export function FacilityTypeBadge({ type }: { type: string }) {
   return <span className={`badge ftype-${type}`}>{type}</span>;
 }
 
+export function CareNeedIcon({ name, size = 24, color = '#1A56CC' }: { name: string; size?: number; color?: string }) {
+  const commonProps = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' };
+
+  switch (name) {
+    case 'personal_care':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5.5 21c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'nursing':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M7 10h10M12 5v10" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 18h16v2H4z" fill={color} opacity="0.1" />
+          <path d="M8 4h8l2 4v10H6V8l2-4Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'behavioural_support':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M7.5 16.5c-1.94 0-3.5-1.56-3.5-3.5S5.56 9.5 7.5 9.5s3.5 1.56 3.5 3.5S9.44 16.5 7.5 16.5Zm9 0c-1.94 0-3.5-1.56-3.5-3.5s1.56-3.5 3.5-3.5 3.5 1.56 3.5 3.5-1.56 3.5-3.5 3.5Z" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12 19.5c2.75 0 5-1.5 5-3.5v-1.25a4.75 4.75 0 0 0-9.5 0v1.25c0 2 2.25 3.5 5 3.5Z" fill={color} opacity="0.08" />
+        </svg>
+      );
+    case 'complex_medical':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <rect x="6" y="3" width="12" height="18" rx="6" stroke={color} strokeWidth="1.8" />
+          <path d="M12 7v6M9 10h6" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case 'overnight_support':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M12 4a8 8 0 0 0 0 16c4.42 0 8-3.58 8-8 0-1.86-.66-3.57-1.76-4.93" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M8.5 10.5c0-1.93 1.57-3.5 3.5-3.5 1.24 0 2.33.62 2.95 1.57" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12 8v4l2 1" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case '24h_support':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.8" />
+          <path d="M12 7v5l3 1.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9.5 16.5h5" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+          <text x="12" y="16.8" textAnchor="middle" fontSize="6.5" fill={color} fontWeight="700">24</text>
+        </svg>
+      );
+    default:
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.8" />
+        </svg>
+      );
+  }
+}
+
+export function AccommodationTypeIcon({ type, size = 36 }: { type: string; size?: number }) {
+  const color = type === 'SDA' ? '#166534' : type === 'STA' ? '#C2410C' : '#1A56CC';
+  const commonProps = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' };
+
+  switch (type) {
+    case 'SDA':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M4 13.5 12 4l8 9.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 13.5v6.5h16v-6.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 12h6" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case 'STA':
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M3 12.5 12 4l9 8.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 21V13h12v8" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 18h6" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case 'SIL':
+    default:
+      return (
+        <svg {...commonProps} aria-hidden="true">
+          <path d="M4 12.5 12 5l8 7.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5 12.5v7.5h14v-7.5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 21V14h6v7" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+  }
+}
+
 // ── Spinner ───────────────────────────────────────────────────
 
 export function Spinner({ size = 20 }: { size?: number }) {

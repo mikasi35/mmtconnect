@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { query, queryOne, withTransaction } from '../common/db';
-import { authenticate } from '../common/auth.middleware';
+import { authenticate, requireRoles } from '../common/auth.middleware';
 import { asyncHandler, NotFoundError, ValidationError, paginate } from '../common/errors';
 import { sendEmail, extractEmailFromContact, getPublicSiteUrl, buildTrackingUrl } from '../common/email';
 import type { Referral } from '../../../shared/types';
@@ -223,7 +223,7 @@ router.patch('/:id', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // POST /referrals/:id/email
-router.post('/:id/email', asyncHandler(async (req: Request, res: Response) => {
+router.post('/:id/email', requireRoles('admin', 'coordinator'), asyncHandler(async (req: Request, res: Response) => {
   const { subject, html, text } = req.body;
   if (!subject?.trim()) throw new ValidationError('subject is required');
   if (!html?.trim() && !text?.trim()) throw new ValidationError('html or text body is required');

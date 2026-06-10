@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { resolvePublicImage, API_BASE } from '@/lib/api';
+import { CareNeedIcon } from '@/components/ui';
 
 const API = API_BASE;
 
@@ -130,14 +131,17 @@ function SearchContent() {
               const active = !!careNeeds[opt.key];
               return (
                 <button key={opt.key} onClick={() => toggleCare(opt.key)} style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
+                  display: 'flex', alignItems: 'center', gap: 10,
                   padding: '6px 12px', borderRadius: 20, fontSize: 13, fontWeight: 500,
                   cursor: 'pointer', border: `1.5px solid ${active ? '#1A56CC' : '#E5E7EB'}`,
                   background: active ? '#EBF2FF' : '#F9FAFB',
                   color: active ? '#1A56CC' : '#4B5563',
                   transition: 'all 0.12s',
                 }}>
-                  {opt.icon} {opt.label}
+                  <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: active ? '#fff' : '#EFF6FF' }}>
+                    <CareNeedIcon name={opt.key} size={18} color={active ? '#1A56CC' : '#4B5563'} />
+                  </div>
+                  {opt.label}
                 </button>
               );
             })}

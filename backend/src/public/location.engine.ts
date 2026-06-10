@@ -111,24 +111,30 @@ export interface LocationSearchParams {
 }
 
 export interface FacilityResult {
-  id:              string;
-  name:            string;
-  type:            string;
-  suburb:          string;
-  state:           string;
-  postcode:        string | null;
-  description:     string | null;
-  image_url?:      string | null;
-  image_urls?:     string[] | null;
-  contact_phone:   string | null;
-  contact_email:   string | null;
-  latitude:        number | null;
-  longitude:       number | null;
-  available_beds:  number;
-  total_beds:      number;
-  supported_care:  Record<string, boolean>;
-  distance_km?:    number;   // present only when GPS used
-  match_score?:    number;   // present only when fuzzy text used
+  id:                   string;
+  name:                 string;
+  type:                 string;
+  suburb:               string;
+  state:                string;
+  postcode:             string | null;
+  description:          string | null;
+  image_url?:           string | null;
+  image_urls?:          string[] | null;
+  contact_phone:        string | null;
+  contact_email:        string | null;
+  website_url?:         string | null;
+  latitude:             number | null;
+  longitude:            number | null;
+  amenities:            string[];
+  features:             string[];
+  care_types:           string[];
+  eligibility?:         string | null;
+  sda_design_category?: string | null;
+  available_beds:       number;
+  total_beds:           number;
+  supported_care:       Record<string, boolean>;
+  distance_km?:         number;
+  match_score?:         number;
 }
 
 export async function searchFacilities(params: LocationSearchParams): Promise<FacilityResult[]> {
@@ -144,6 +150,7 @@ export async function searchFacilities(params: LocationSearchParams): Promise<Fa
 
   const conditions: string[] = [
     "f.is_active = true",
+    "f.is_published = true",
     "EXISTS (SELECT 1 FROM vacancies v2 WHERE v2.facility_id = f.id AND v2.status = 'available')",
   ];
   const sqlParams: any[] = [];
@@ -261,8 +268,12 @@ export async function searchFacilities(params: LocationSearchParams): Promise<Fa
   const rows = await query<any>(
     `SELECT
        f.id, f.name, f.type, f.suburb, f.state, f.postcode,
-       f.description, f.image_url, f.image_urls, f.contact_phone, f.contact_email,
+       f.description, f.image_url, f.image_urls, f.contact_phone, f.contact_email, f.website_url,
        f.latitude, f.longitude,
+       COALESCE(f.amenities, '[]'::jsonb)     AS amenities,
+       COALESCE(f.features,  '[]'::jsonb)     AS features,
+       COALESCE(f.care_types,'[]'::jsonb)     AS care_types,
+       f.eligibility, f.sda_design_category,
        COUNT(v.id) FILTER (WHERE v.status = 'available')::int AS available_beds,
        COUNT(v.id)::int                                        AS total_beds,
        (

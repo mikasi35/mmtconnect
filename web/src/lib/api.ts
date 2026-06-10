@@ -119,10 +119,12 @@ function del<T>(path: string) { return request<T>(path, { method: 'DELETE' }); }
 
 export const api = {
   auth: {
-    login:    (email: string, password: string) => post<any>('/auth/login', { email, password }),
-    register: (body: any)  => post<any>('/auth/register', body),
-    logout:   ()           => post<any>('/auth/logout', {}),
-    me:       ()           => get<any>('/auth/me'),
+    login:         (email: string, password: string) => post<any>('/auth/login', { email, password }),
+    register:      (body: any)  => post<any>('/auth/register', body),
+    logout:        ()           => post<any>('/auth/logout', {}),
+    me:            ()           => get<any>('/auth/me'),
+    forgotPassword:(email: string) => post<any>('/auth/forgot-password', { email }),
+    resetPassword:(token: string, password: string) => post<any>('/auth/reset-password', { token, password }),
   },
 
   facilities: {
@@ -170,8 +172,10 @@ export const api = {
       const q = params ? '?' + new URLSearchParams(params).toString() : '';
       return get<any>(`/users${q}`);
     },
+    create: (body: any) => post<any>('/users', body),
     get:    (id: string)  => get<any>(`/users/${id}`),
     update: (id: string, body: any) => patch<any>(`/users/${id}`, body),
+    delete: (id: string) => del<any>(`/users/${id}`),
   },
 
   public: {
@@ -179,5 +183,17 @@ export const api = {
       const q = params ? '?' + new URLSearchParams(params).toString() : '';
       return get<any>(`/public/vacancies${q}`);
     },
+  },
+
+  errorLogs: {
+    list:    (params?: Record<string, string>) => {
+      const q = params ? '?' + new URLSearchParams(params).toString() : '';
+      return get<any>(`/error-logs${q}`);
+    },
+    stats:   () => get<any>('/error-logs/stats'),
+    get:     (id: string) => get<any>(`/error-logs/${id}`),
+    resolve: (id: string) => patch<any>(`/error-logs/${id}/resolve`, {}),
+    delete:  (id: string) => del<any>(`/error-logs/${id}`),
+    cleanup: (days: number) => del<any>(`/error-logs?older_than_days=${days}`),
   },
 };

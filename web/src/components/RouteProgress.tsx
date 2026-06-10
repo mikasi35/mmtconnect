@@ -1,22 +1,31 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function RouteProgress() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
-  const [lastPath, setLastPath] = useState(pathname);
+  const mounted = useRef(false);
+  const previousPath = useRef(pathname);
 
   useEffect(() => {
-    if (!pathname || pathname === lastPath) return;
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
 
+    if (!pathname || pathname === previousPath.current) {
+      setVisible(false);
+      return;
+    }
+
+    previousPath.current = pathname;
     setVisible(true);
-    setLastPath(pathname);
-    const hideTimer = window.setTimeout(() => setVisible(false), 450);
 
+    const hideTimer = window.setTimeout(() => setVisible(false), 450);
     return () => window.clearTimeout(hideTimer);
-  }, [pathname, lastPath]);
+  }, [pathname]);
 
   if (!visible) return null;
 

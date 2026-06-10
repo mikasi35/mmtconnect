@@ -2,7 +2,7 @@
 //  MMT Care Connect — Shared Types
 // ============================================================
 
-export type UserRole = 'admin';
+export type UserRole = 'admin' | 'coordinator';
 export type FacilityType = 'SIL' | 'SDA' | 'STA';
 export type VacancyStatus = 'available' | 'reserved' | 'occupied';
 export type UrgencyLevel = 'low' | 'medium' | 'high' | 'immediate';
@@ -32,6 +32,13 @@ export interface User {
   updated_at: string;
 }
 
+export type SdaDesignCategory =
+  | 'High Physical Support'
+  | 'Improved Liveability'
+  | 'Fully Accessible'
+  | 'Robust'
+  | 'Basic';
+
 export interface Facility {
   id: string;
   name: string;
@@ -46,10 +53,24 @@ export interface Facility {
   contact_name?: string;
   contact_email?: string;
   contact_phone?: string;
+  website_url?: string;
   image_url?: string;
   image_urls?: string[];
   capacity: number;
   is_active: boolean;
+  is_published: boolean;
+  /** Array of amenity keys, e.g. ['ensuite_bathroom', 'ducted_ac'] */
+  amenities: string[];
+  /** Free-text feature bullets shown on the public listing */
+  features: string[];
+  /** Current tenant description for matching purposes */
+  tenant_profile?: string;
+  /** Eligibility requirements, e.g. "Requires SDA funding in NDIS plan" */
+  eligibility?: string;
+  /** Care services offered, e.g. ['24h_support', 'registered_nurse'] */
+  care_types: string[];
+  /** SDA design category */
+  sda_design_category?: SdaDesignCategory;
   created_at: string;
   updated_at: string;
   vacancies?: Vacancy[];

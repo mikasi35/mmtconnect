@@ -1,14 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { AccommodationTypeIcon, CareNeedIcon } from '@/components/ui';
 
 const CARE_OPTIONS = [
-  { key: 'personal_care',       label: 'Personal care',       icon: 'P' },
-  { key: 'nursing',             label: 'Nursing support',     icon: 'N' },
-  { key: 'behavioural_support', label: 'Behavioural support', icon: 'B' },
-  { key: 'complex_medical',     label: 'Complex medical',     icon: 'C' },
-  { key: 'overnight_support',   label: 'Overnight support',   icon: 'O' },
-  { key: '24h_support',         label: '24h support',         icon: '24' },
+  { key: 'personal_care',       label: 'Personal care' },
+  { key: 'nursing',             label: 'Nursing support' },
+  { key: 'behavioural_support', label: 'Behavioural support' },
+  { key: 'complex_medical',     label: 'Complex medical' },
+  { key: 'overnight_support',   label: 'Overnight support' },
+  { key: '24h_support',         label: '24h support' },
 ];
 
 const FACILITY_TYPES = [
@@ -16,21 +17,18 @@ const FACILITY_TYPES = [
     type: 'SIL',
     name: 'Supported Independent Living',
     desc: 'Long-term accommodation with daily support staff to help with personal care, cooking, and community access.',
-    icon: 'S',
     color: '#EBF2FF', border: '#1A56CC', text: '#1A56CC',
   },
   {
     type: 'SDA',
     name: 'Specialist Disability Accommodation',
     desc: 'Purpose-built housing designed for people with extreme functional impairment or very high support needs.',
-    icon: 'D',
     color: '#F0FDF4', border: '#16A34A', text: '#166534',
   },
   {
     type: 'STA',
     name: 'Short-Term Accommodation',
     desc: 'Respite stays for NDIS participants, giving family carers a break while your loved one is well looked after.',
-    icon: 'R',
     color: '#FFF7ED', border: '#F97316', text: '#9A3412',
   },
 ];
@@ -54,7 +52,7 @@ export default function FindHomePage() {
   };
 
   return (
-    <div className="public-page-body">
+    <div className="public-page-body hero-page-body">
       {/* Hero */}
       <div className="hero-section">
         <div className="hero-inner">
@@ -108,6 +106,10 @@ export default function FindHomePage() {
                 Search
               </button>
             </div>
+          </div>
+          <div className="hero-cta-row">
+            <button onClick={() => router.push('/find/submit')} className="hero-cta-button hero-cta-primary">Submit referral</button>
+            <button onClick={() => router.push('/find/search')} className="hero-cta-button hero-cta-secondary">Browse vacancies</button>
           </div>
 
           {/* Quick links */}
@@ -177,7 +179,7 @@ export default function FindHomePage() {
                 border: `1.5px solid ${ft.border}22`, padding: '24px',
                 cursor: 'pointer',
               }} onClick={() => router.push(`/find/search?type=${ft.type}`)}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>{ft.icon}</div>
+                <div style={{ fontSize: 36, marginBottom: 12 }}><AccommodationTypeIcon type={ft.type} size={36} /></div>
                 <div style={{
                   display: 'inline-block', background: '#fff',
                   borderRadius: 5, padding: '2px 8px', fontSize: 11,
@@ -218,7 +220,9 @@ export default function FindHomePage() {
                 display: 'flex', alignItems: 'center', gap: 10,
                 border: '0.5px solid #E5E7EB',
               }}>
-                <span style={{ fontSize: 20 }}>{opt.icon}</span>
+                <div style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: '#fff' }}>
+                  <CareNeedIcon name={opt.key} size={20} color="#1A56CC" />
+                </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>{opt.label}</span>
               </div>
             ))}
@@ -227,26 +231,25 @@ export default function FindHomePage() {
       </div>
 
       {/* Urgency CTA */}
-      <div style={{ background: '#1A3A8F', padding: '48px 24px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <div style={{ width: 48, height: 48, borderRadius: 16, background: '#FEE2E2', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', fontSize: 24, fontWeight: 700 }}>
+      <div className="urgent-cta">
+        <div className="urgent-cta-content">
+          <div style={{ width: 48, height: 48, borderRadius: 16, background: '#FEE2E2', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', fontSize: 24, fontWeight: 700, marginBottom: 14 }}>
             !
           </div>
           <h2 style={{ fontSize: 26, fontWeight: 700, color: '#fff', margin: '0 0 12px' }}>
             Need urgent placement?
           </h2>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', margin: '0 0 28px' }}>
-            If your loved one needs accommodation urgently — hospital discharge, unsafe living situation,
-            or carer breakdown — submit an urgent referral now and we'll prioritise it immediately.
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', margin: 0, maxWidth: 680 }}>
+            If your loved one needs accommodation urgently — hospital discharge, unsafe living situation, or carer breakdown — submit an urgent referral now and we'll prioritise it immediately.
           </p>
-          <button onClick={() => router.push('/find/submit?urgency=immediate')} style={{
-            background: '#fff', color: '#1A3A8F', border: 'none',
-            borderRadius: 10, padding: '14px 32px', fontSize: 16,
-            fontWeight: 800, cursor: 'pointer',
-          }}>
-            Submit urgent referral
-          </button>
         </div>
+        <button onClick={() => router.push('/find/submit?urgency=immediate')} style={{
+          background: '#fff', color: '#1A3A8F', border: 'none',
+          borderRadius: 12, padding: '16px 32px', fontSize: 16,
+          fontWeight: 800, cursor: 'pointer', minWidth: 220,
+        }}>
+          Submit urgent referral
+        </button>
       </div>
     </div>
   );

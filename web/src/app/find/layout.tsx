@@ -10,11 +10,7 @@ export default function FindLayout({ children }: { children: React.ReactNode }) 
     <div className="find-page-shell">
       <nav className="public-nav">
         <a href="/find" className="public-nav-logo">
-          <div className="public-nav-logo-mark">M</div>
-          <div>
-            <div className="public-nav-title">MMT Care Connect</div>
-            <div className="public-nav-subtitle">Find NDIS Accommodation</div>
-          </div>
+          <img src="https://mmtcare.com.au/wp-content/uploads/2026/02/MMT-CARE-LOGO.webp" alt="MMT Care Connect Logo" style={{ height: '40px', width: 'auto', display: 'block' }} />
         </a>
         <div className="public-nav-links">
           <a href="/find/search" className="nav-link">Search</a>

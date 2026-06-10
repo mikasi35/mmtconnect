@@ -228,10 +228,53 @@ h1,h2,h3,h4,h5,h6 {
   padding: 32px 24px;
 }
 
+.hero-page-body {
+  /* No top padding so hero is flush against the navbar */
+  padding-top: 0;
+}
+
 .hero-section {
-  background: linear-gradient(135deg, #1A56CC 0%, #0F3D8A 100%);
-  padding: 72px 24px 80px;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  background-image: linear-gradient(135deg, rgba(26, 86, 204, 0.92) 0%, rgba(15, 61, 138, 0.95) 100%), url('/hero-bg.png');
+  background-size: cover;
+  background-position: center;
+  padding: 88px 24px 94px;
   text-align: center;
+  overflow: hidden;
+}
+
+.hero-cta-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.hero-cta-button {
+  border-radius: 999px;
+  border: none;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hero-cta-primary {
+  background: #fff;
+  color: #1A56CC;
+}
+
+.hero-cta-secondary {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.28);
 }
 
 .hero-inner {
@@ -343,6 +386,37 @@ h1,h2,h3,h4,h5,h6 {
 
 .section-blue {
   background: #F8FAFF;
+}
+
+.urgent-cta {
+  background: #1A3A8F;
+  padding: 48px 24px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: #fff;
+}
+
+.urgent-cta-content {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.urgent-cta button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .urgent-cta {
+    flex-direction: column;
+    text-align: center;
+  }
+  .urgent-cta-content {
+    text-align: center;
+  }
 }
 
 .section-inner {
@@ -584,3 +658,163 @@ h1,h2,h3,h4,h5,h6 {
 /* ── Fade in ──────────────────────────────────────────────────── */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .fade-in { animation: fadeIn 0.2s ease; }
+
+/* ── Facilities grid ──────────────────────────────────────────── */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.facility-card { transition: box-shadow 0.15s; }
+.facility-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.facility-detail-panel {
+  width: 320px;
+  background: #fff;
+  border-left: 0.5px solid var(--gray-200);
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Referrals layout ─────────────────────────────────────────── */
+.referral-detail-panel {
+  width: 320px;
+  background: #fff;
+  border-left: 0.5px solid var(--gray-200);
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.referrals-cards { display: none; }   /* shown only on mobile */
+.referrals-table-wrap { display: block; }
+
+/* ── Mobile bottom nav — hidden on desktop, shown on mobile ───── */
+.mobile-nav { display: none !important; }
+
+/* ── Mobile-safe main area bottom pad ────────────────────────── */
+.main-area-mobile-safe { padding-bottom: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   Mobile — max 768px
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Hide desktop sidebar, show mobile nav */
+  .desktop-sidebar { display: none !important; }
+  .mobile-nav { display: flex !important; }
+
+  /* Main area needs bottom padding for the bottom nav */
+  .main-area-mobile-safe { padding-bottom: 72px; }
+  .main-area { padding-bottom: 72px; }
+
+  /* Page body full-width on mobile */
+  .page-body { padding: 14px 14px; }
+
+  /* KPI cards — 2 cols on mobile */
+  .page-body > div[style*="gridTemplateColumns: repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Sidebar hidden, so full width */
+  .app-shell { overflow: auto; height: auto; min-height: 100vh; }
+  .main-area { height: auto; min-height: calc(100vh - 72px); overflow-y: visible; }
+
+  /* Facilities grid — single column */
+  .facilities-grid { grid-template-columns: 1fr; }
+
+  /* Facility detail panel — full-screen bottom sheet */
+  .facility-detail-panel {
+    position: fixed !important;
+    bottom: 72px; left: 0; right: 0;
+    width: 100% !important;
+    max-height: 65vh;
+    border-left: none !important;
+    border-top: 1px solid var(--gray-200);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+    z-index: 90;
+  }
+
+  /* Referrals — show cards, hide table */
+  .referrals-cards { display: flex; flex-direction: column; gap: 10px; }
+  .referrals-table-wrap { display: none !important; }
+
+  /* Referral detail panel — bottom sheet */
+  .referral-detail-panel {
+    position: fixed !important;
+    bottom: 72px; left: 0; right: 0;
+    width: 100% !important;
+    max-height: 75vh;
+    border-left: none !important;
+    border-top: 1px solid var(--gray-200);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+    z-index: 90;
+  }
+
+  /* Modal — full-screen on mobile */
+  .modal-backdrop { padding: 0; align-items: flex-end; }
+  .modal {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+  }
+  .modal-header { border-radius: 20px 20px 0 0; }
+
+  /* Touch-friendly min heights */
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 36px; }
+  .form-input, .form-select, .form-textarea { font-size: 16px !important; } /* prevent iOS zoom */
+
+  /* Matching page — tab-based layout on mobile */
+  .matching-tabs {
+    display: flex !important;
+    background: #fff;
+    border-bottom: 0.5px solid var(--gray-200);
+    flex-shrink: 0;
+  }
+  .matching-list-pane {
+    width: 100% !important;
+    border-right: none !important;
+    display: none !important;
+  }
+  .matching-list-pane.matching-pane-active { display: flex !important; }
+  .matching-results-pane { display: none !important; }
+  .matching-results-pane.matching-pane-active { display: flex !important; }
+
+  /* Users page — cards on mobile, hide table */
+  .users-table-wrap { display: none !important; }
+  .users-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* ── Matching page layout ─────────────────────────────────────── */
+.matching-tabs { display: none; background: '#fff'; border-bottom: '0.5px solid var(--gray-200)'; }
+.matching-list-pane {
+  width: 320px; border-right: 0.5px solid var(--gray-200);
+  display: flex; flex-direction: column; flex-shrink: 0;
+  overflow: hidden;
+}
+.matching-results-pane {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* ── Users page ───────────────────────────────────────────────── */
+.users-table-wrap { display: block; }
+.users-cards { display: none; }
+
+/* ── Referral card (mobile) ───────────────────────────────────── */
+.referral-card {
+  background: #fff;
+  border: 0.5px solid var(--gray-200);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: box-shadow 0.12s;
+}
+.referral-card:active { background: var(--gray-50); }

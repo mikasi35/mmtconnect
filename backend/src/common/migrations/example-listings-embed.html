@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MMT Care — Accommodation Listings (embed example)</title>
+  <style>
+    /* ── Reset / base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9fafb; color: #111827; }
+
+    /* ── Page wrapper ──────────────────────────────────────────── */
+    .mmt-listings { max-width: 1140px; margin: 0 auto; padding: 40px 20px; }
+    .mmt-listings__header { margin-bottom: 28px; }
+    .mmt-listings__title  { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .mmt-listings__sub    { font-size: 15px; color: #6b7280; }
+
+    /* ── Filters ───────────────────────────────────────────────── */
+    .mmt-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .mmt-filters input,
+    .mmt-filters select { padding: 9px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; outline: none; }
+    .mmt-filters input:focus, .mmt-filters select:focus { border-color: #2563eb; }
+    .mmt-filters input { flex: 1; min-width: 200px; }
+    .mmt-btn { padding: 9px 20px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .mmt-btn:hover { background: #1d4ed8; }
+
+    /* ── Grid ──────────────────────────────────────────────────── */
+    .mmt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+    /* ── Card ──────────────────────────────────────────────────── */
+    .mmt-card { background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
+    .mmt-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
+    .mmt-card__img { width: 100%; height: 180px; object-fit: cover; background: #e5e7eb; }
+    .mmt-card__img-placeholder { width: 100%; height: 180px; background: linear-gradient(135deg,#e0e7ff,#ede9fe); display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .mmt-card__body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .mmt-card__top  { display: flex; justify-content: space-between; align-items: flex-start; }
+    .mmt-card__name { font-size: 16px; font-weight: 700; line-height: 1.25; }
+    .mmt-card__loc  { font-size: 13px; color: #6b7280; margin-top: 2px; }
+    .mmt-card__beds { text-align: right; }
+    .mmt-card__beds-num { font-size: 22px; font-weight: 700; line-height: 1; color: #16a34a; }
+    .mmt-card__beds-num.none { color: #ef4444; }
+    .mmt-card__beds-label { font-size: 10px; color: #9ca3af; }
+    .mmt-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-sil { background: #ede9fe; color: #5b21b6; }
+    .badge-sda { background: #ebf2ff; color: #1a56cc; }
+    .badge-sta { background: #f0fdf4; color: #166534; }
+
+    /* ── Description ───────────────────────────────────────────── */
+    .mmt-card__desc { font-size: 13px; color: #6b7280; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── Amenity pills ─────────────────────────────────────────── */
+    .mmt-card__amenities { display: flex; flex-wrap: wrap; gap: 5px; }
+    .mmt-pill { padding: 3px 9px; background: #f3f4f6; color: #374151; border-radius: 20px; font-size: 11px; }
+
+    /* ── Features list ─────────────────────────────────────────── */
+    .mmt-card__features { display: flex; flex-direction: column; gap: 3px; }
+    .mmt-card__feature  { font-size: 12px; color: #374151; display: flex; gap: 5px; }
+    .mmt-card__feature::before { content: '✓'; color: #16a34a; flex-shrink: 0; }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    .mmt-card__footer { padding: 12px 16px; border-top: 1px solid #f3f4f6; display: flex; gap: 8px; align-items: center; }
+    .mmt-card__phone  { font-size: 13px; color: #374151; flex: 1; }
+    .mmt-card__cta    { padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .mmt-card__cta:hover { background: #1d4ed8; }
+
+    /* ── Status bar ────────────────────────────────────────────── */
+    .mmt-status { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
+    .mmt-status.error { color: #ef4444; }
+  </style>
+</head>
+<body>
+
+<section class="mmt-listings">
+  <div class="mmt-listings__header">
+    <h1 class="mmt-listings__title">Available Accommodation</h1>
+    <p class="mmt-listings__sub">SDA, SIL &amp; STA properties across Australia</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="mmt-filters">
+    <input id="mmt-search" type="text" placeholder="Search suburb or facility name…" />
+    <select id="mmt-state">
+      <option value="">All states</option>
+      <option value="NSW">NSW</option>
+      <option value="VIC">VIC</option>
+      <option value="QLD">QLD</option>
+      <option value="WA">WA</option>
+      <option value="SA">SA</option>
+      <option value="TAS">TAS</option>
+      <option value="NT">NT</option>
+      <option value="ACT">ACT</option>
+    </select>
+    <select id="mmt-type">
+      <option value="">All types</option>
+      <option value="SDA">SDA</option>
+      <option value="SIL">SIL</option>
+      <option value="STA">STA</option>
+    </select>
+    <button class="mmt-btn" onclick="loadListings()">Search</button>
+  </div>
+
+  <!-- Results -->
+  <div id="mmt-grid" class="mmt-grid"></div>
+  <div id="mmt-status" class="mmt-status">Loading…</div>
+</section>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────
+  const API_BASE = 'https://mmtconnectv2.onrender.com/api/v1/public';
+
+  // Human-readable amenity labels
+  const AMENITY_LABELS = {
+    ensuite_bathroom:     'Ensuite bathroom',
+    extra_bathrooms:      'Extra bathrooms',
+    accessible_kitchen:   'Accessible kitchen',
+    large_living_area:    'Large living area',
+    alfresco_outdoor:     'Alfresco / outdoor area',
+    double_garage:        'Double garage',
+    single_garage:        'Single garage',
+    ducted_ac:            'Ducted air conditioning',
+    split_system_ac:      'Split system AC',
+    beautiful_gardens:    'Beautiful gardens',
+    fully_furnished:      'Fully furnished',
+    backup_power:         'Backup power supply',
+    out_of_hours_access:  'Out-of-hours access',
+    overnight_support_24_7: '24/7 overnight support',
+    registered_nurse:     'Registered nurse',
+    clinical_support:     'Clinical support',
+    wheelchair_accessible:'Wheelchair accessible',
+    ceiling_hoist:        'Ceiling hoist',
+    pool:                 'Swimming pool',
+    gym:                  'Gym',
+    sensory_room:         'Sensory room',
+    therapy_room:         'Therapy room',
+  };
+
+  // ── Render a single card ─────────────────────────────────────
+  function renderCard(f) {
+    const badgeClass = { SDA: 'badge-sda', SIL: 'badge-sil', STA: 'badge-sta' }[f.type] ?? 'badge-sil';
+    const bedsClass  = f.available_beds > 0 ? '' : 'none';
+
+    // Image
+    const imageHtml = (f.image_urls && f.image_urls[0])
+      ? `<img class="mmt-card__img" src="${f.image_urls[0]}" alt="${f.name}" loading="lazy" />`
+      : (f.image_url
+          ? `<img class="mmt-card__img" src="${f.image_url}" alt="${f.name}" loading="lazy" />`
+          : `<div class="mmt-card__img-placeholder">🏠</div>`);
+
+    // Amenity pills — show first 5
+    const amenities = (f.amenities || []).slice(0, 5).map(key =>
+      `<span class="mmt-pill">${AMENITY_LABELS[key] || key}</span>`
+    ).join('');
+    const moreAmenities = f.amenities && f.amenities.length > 5
+      ? `<span class="mmt-pill">+${f.amenities.length - 5} more</span>`
+      : '';
+
+    // Feature bullets — show first 3
+    const features = (f.features || []).slice(0, 3).map(feat =>
+      `<div class="mmt-card__feature">${feat}</div>`
+    ).join('');
+
+    // CTA link — to individual page or contact
+    const ctaHref = f.website_url || `mailto:${f.contact_email || 'info@mmtcare.com.au'}`;
+    const ctaText = f.available_beds > 0 ? 'View vacancy' : 'Join waitlist';
+
+    const phoneLine = f.contact_phone
+      ? `<span class="mmt-card__phone">📞 ${f.contact_phone}</span>`
+      : '';
+
+    const sdaTag = f.sda_design_category
+      ? `<span class="mmt-badge badge-sda" style="margin-left:4px;font-size:10px">${f.sda_design_category}</span>`
+      : '';
+
+    return `
+      <div class="mmt-card">
+        ${imageHtml}
+        <div class="mmt-card__body">
+          <div class="mmt-card__top">
+            <div>
+              <div>
+                <span class="mmt-badge ${badgeClass}">${f.type}</span>${sdaTag}
+              </div>
+              <div class="mmt-card__name">${f.name}</div>
+              <div class="mmt-card__loc">📍 ${f.suburb}, ${f.state}${f.postcode ? ' ' + f.postcode : ''}</div>
+            </div>
+            <div class="mmt-card__beds">
+              <div class="mmt-card__beds-num ${bedsClass}">${f.available_beds}</div>
+              <div class="mmt-card__beds-label">bed${f.available_beds !== 1 ? 's' : ''} avail.</div>
+            </div>
+          </div>
+
+          ${f.description ? `<p class="mmt-card__desc">${f.description}</p>` : ''}
+
+          ${features ? `<div class="mmt-card__features">${features}</div>` : ''}
+
+          ${amenities || moreAmenities
+            ? `<div class="mmt-card__amenities">${amenities}${moreAmenities}</div>`
+            : ''}
+        </div>
+
+        <div class="mmt-card__footer">
+          ${phoneLine}
+          <a class="mmt-card__cta" href="${ctaHref}" target="_blank">${ctaText}</a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Fetch & render ───────────────────────────────────────────
+  async function loadListings() {
+    const search = document.getElementById('mmt-search').value.trim();
+    const state  = document.getElementById('mmt-state').value;
+    const type   = document.getElementById('mmt-type').value;
+
+    const grid   = document.getElementById('mmt-grid');
+    const status = document.getElementById('mmt-status');
+
+    grid.innerHTML   = '';
+    status.textContent = 'Loading…';
+    status.className   = 'mmt-status';
+
+    // Build query string
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (state)  params.set('state',  state);
+    if (type)   params.set('type',   type);
+    params.set('limit', '30');
+
+    try {
+      const res  = await fetch(`${API_BASE}/facilities?${params}`);
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+      const json = await res.json();
+      const facilities = json.data || [];
+
+      if (!facilities.length) {
+        status.textContent = 'No available accommodation found for your search. Try adjusting the filters.';
+        return;
+      }
+
+      status.textContent = '';
+      grid.innerHTML = facilities.map(renderCard).join('');
+
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Unable to load listings right now. Please call us on 1300 066 822.';
+      status.className   = 'mmt-status error';
+    }
+  }
+
+  // Auto-search on filter change
+  document.getElementById('mmt-state').addEventListener('change', loadListings);
+  document.getElementById('mmt-type').addEventListener('change', loadListings);
+
+  // Debounced search-as-you-type
+  let _debounce;
+  document.getElementById('mmt-search').addEventListener('input', () => {
+    clearTimeout(_debounce);
+    _debounce = setTimeout(loadListings, 400);
+  });
+
+  // Initial load
+  loadListings();
+</script>
+
+</body>
+</html>

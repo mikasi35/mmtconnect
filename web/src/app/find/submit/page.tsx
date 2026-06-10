@@ -2,6 +2,7 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { API_BASE } from '@/lib/api';
+import { CareNeedIcon } from '@/components/ui';
 
 const API = API_BASE;
 
@@ -244,7 +245,9 @@ function SubmitContent() {
                     border: `${active ? '2px' : '1px'} solid ${active ? '#1A56CC' : '#E5E7EB'}`,
                     background: active ? '#EBF2FF' : '#fff', transition: 'all 0.1s',
                   }}>
-                    <span style={{ fontSize: 24 }}>{opt.icon}</span>
+                    <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 12, background: active ? '#EFF6FF' : '#F8FAFF' }}>
+                      <CareNeedIcon name={opt.key} size={22} color={active ? '#1A56CC' : '#4B5563'} />
+                    </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: active ? '#1A56CC' : '#111827' }}>{opt.label}</div>
                       <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{opt.desc}</div>

@@ -112,7 +112,7 @@ router.get('/summary', asyncHandler(async (_req: Request, res: Response) => {
 router.get('/activity', asyncHandler(async (req: Request, res: Response) => {
   const limit = Math.min(50, parseInt((req.query.limit as string) || '20'));
   const logs = await query(
-    `SELECT al.*, row_to_json(u) as performer
+    `SELECT al.*, json_build_object('id', u.id, 'name', u.name) as performer
      FROM activity_logs al
      LEFT JOIN users u ON u.id = al.performed_by
      ORDER BY al.created_at DESC

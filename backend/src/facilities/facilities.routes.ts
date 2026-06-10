@@ -85,7 +85,9 @@ router.post('/', requireRoles('admin'), asyncHandler(async (req: Request, res: R
   const {
     name, type, address, suburb, state, postcode,
     latitude, longitude, description, image_url, image_urls,
-    contact_name, contact_email, contact_phone, capacity,
+    contact_name, contact_email, contact_phone, website_url, capacity,
+    amenities, features, tenant_profile, eligibility, care_types,
+    sda_design_category, is_published,
   } = req.body;
 
   if (!name || !type || !address || !suburb || !state) {
@@ -98,13 +100,28 @@ router.post('/', requireRoles('admin'), asyncHandler(async (req: Request, res: R
   const facility = await queryOne<Facility>(
     `INSERT INTO facilities
        (name,type,address,suburb,state,postcode,latitude,longitude,description,image_url,image_urls,
-        contact_name,contact_email,contact_phone,capacity,created_by)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+        contact_name,contact_email,contact_phone,website_url,capacity,
+        amenities,features,tenant_profile,eligibility,care_types,sda_design_category,is_published,
+        created_by)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
      RETURNING *`,
-    [name, type, address, suburb, state, postcode ?? null,
-     latitude ?? null, longitude ?? null, description ?? null,
-     image_url ?? null, image_urls ? JSON.stringify(image_urls) : JSON.stringify([]), contact_name ?? null, contact_email ?? null, contact_phone ?? null,
-     capacity ?? 1, req.user!.sub]
+    [
+      name, type, address, suburb, state, postcode ?? null,
+      latitude ?? null, longitude ?? null, description ?? null,
+      image_url ?? null,
+      image_urls ? JSON.stringify(image_urls) : JSON.stringify([]),
+      contact_name ?? null, contact_email ?? null, contact_phone ?? null,
+      website_url ?? null,
+      capacity ?? 1,
+      JSON.stringify(amenities ?? []),
+      JSON.stringify(features ?? []),
+      tenant_profile ?? null,
+      eligibility ?? null,
+      JSON.stringify(care_types ?? []),
+      sda_design_category ?? null,
+      is_published !== false,
+      req.user!.sub,
+    ]
   );
 
   await query(
@@ -121,8 +138,13 @@ router.patch('/:id', requireRoles('admin'), asyncHandler(async (req: Request, re
   const existing = await queryOne('SELECT id FROM facilities WHERE id=$1', [req.params.id]);
   if (!existing) throw new NotFoundError('Facility');
 
-  const fields = ['name','type','address','suburb','state','postcode','latitude','longitude',
-                  'description','image_url','image_urls','contact_name','contact_email','contact_phone','capacity','is_active'];
+  const fields = [
+    'name','type','address','suburb','state','postcode','latitude','longitude',
+    'description','image_url','image_urls','contact_name','contact_email','contact_phone',
+    'website_url','capacity','is_active','is_published',
+    'amenities','features','tenant_profile','eligibility','care_types','sda_design_category',
+  ];
+  const jsonbFields = new Set(['image_urls','amenities','features','care_types']);
   const updates: string[] = [];
   const params: any[]     = [];
   let p = 1;
@@ -130,7 +152,7 @@ router.patch('/:id', requireRoles('admin'), asyncHandler(async (req: Request, re
   for (const f of fields) {
     if (req.body[f] !== undefined) {
       updates.push(`${f} = $${p++}`);
-      params.push(f === 'image_urls' ? JSON.stringify(req.body[f]) : req.body[f]);
+      params.push(jsonbFields.has(f) ? JSON.stringify(req.body[f]) : req.body[f]);
     }
   }
 
@@ -220,7 +242,7 @@ router.post('/:id/vacancies', requireRoles('admin'), asyncHandler(async (req: Re
 }));
 
 // PATCH /vacancies/:vacancyId/status
-router.patch('/vacancies/:vacancyId/status', asyncHandler(async (req: Request, res: Response) => {
+router.patch('/vacancies/:vacancyId/status', requireRoles('admin', 'coordinator'), asyncHandler(async (req: Request, res: Response) => {
   const { status } = req.body;
   if (!['available','reserved','occupied'].includes(status)) {
     throw new ValidationError('status must be available, reserved or occupied');
@@ -242,7 +264,7 @@ router.patch('/vacancies/:vacancyId/status', asyncHandler(async (req: Request, r
 }));
 
 // PATCH /vacancies/:vacancyId
-router.patch('/vacancies/:vacancyId', asyncHandler(async (req: Request, res: Response) => {
+router.patch('/vacancies/:vacancyId', requireRoles('admin', 'coordinator'), asyncHandler(async (req: Request, res: Response) => {
   const fields = ['label','care_level_supported','status','start_date','end_date','notes'];
   const updates: string[] = [];
   const params: any[] = [];

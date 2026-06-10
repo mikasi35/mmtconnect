@@ -1,10 +1,15 @@
 import { Router, Request, Response } from 'express';
+import cors from 'cors';
 import { query, queryOne } from '../common/db';
 import { asyncHandler, ValidationError } from '../common/errors';
 import { sendEmail, buildTrackingUrl, getPublicSiteUrl } from '../common/email';
 import { searchFacilities, normaliseState } from './location.engine';
 
 const router = Router();
+
+// Public routes allow any origin so mmtcare.com.au can pull data with a script tag
+router.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
+router.options('*', cors({ origin: '*' }));
 
 // ── GET /public/facilities ────────────────────────────────────────────────────
 // Smart search: handles GPS, fuzzy suburb/city, care filters, state, type.
@@ -56,8 +61,14 @@ router.get('/facilities/:id', asyncHandler(async (req: Request, res: Response) =
   const facility = await queryOne(
     `SELECT
        f.id, f.name, f.type, f.address, f.suburb, f.state, f.postcode,
-       f.description, f.image_url, COALESCE(f.image_urls, '[]'::jsonb) AS image_urls, f.contact_phone, f.contact_email,
+       f.description,
+       f.contact_phone, f.contact_email, f.website_url, f.contact_name,
+       f.image_url, COALESCE(f.image_urls, '[]'::jsonb) AS image_urls,
        f.latitude, f.longitude,
+       COALESCE(f.amenities, '[]'::jsonb)    AS amenities,
+       COALESCE(f.features,  '[]'::jsonb)    AS features,
+       COALESCE(f.care_types,'[]'::jsonb)    AS care_types,
+       f.tenant_profile, f.eligibility, f.sda_design_category,
        COUNT(v.id) FILTER (WHERE v.status = 'available')::int AS available_beds,
        COUNT(v.id)::int AS total_beds,
        jsonb_agg(
@@ -72,7 +83,7 @@ router.get('/facilities/:id', asyncHandler(async (req: Request, res: Response) =
        ) FILTER (WHERE v.id IS NOT NULL) AS vacancies
      FROM facilities f
      LEFT JOIN vacancies v ON v.facility_id = f.id
-     WHERE f.id = $1 AND f.is_active = true
+     WHERE f.id = $1 AND f.is_active = true AND f.is_published = true
      GROUP BY f.id`,
     [req.params.id]
   );

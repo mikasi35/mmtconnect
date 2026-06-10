@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import { errorHandler } from './common/errors';
 import authRoutes       from './auth/auth.routes';
 import facilitiesRoutes from './facilities/facilities.routes';
@@ -13,6 +14,7 @@ import matchingRoutes   from './matching/matching.routes';
 import analyticsRoutes  from './analytics/analytics.routes';
 import usersRoutes      from './users/users.routes';
 import publicRoutes     from './public/public.routes';
+import errorLogsRoutes  from './errors/errors.routes';
 
 const app = express();
 
@@ -20,6 +22,13 @@ const app = express();
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
+
+// Public API routes are open to any origin (called by mmtcare.com.au and other external sites).
+// This MUST be registered before the restrictive app-level CORS below.
+app.use('/api/v1/public', cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
+app.options('/api/v1/public/*', cors({ origin: '*' }));
+
+// All other routes: restricted to known origins only
 app.use(cors({
   origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,exp://localhost:8081').split(','),
   credentials: true,
@@ -30,6 +39,15 @@ app.use(express.urlencoded({ extended: true }));
 const uploadRoot = path.resolve(process.cwd(), 'uploads');
 fs.mkdirSync(path.join(uploadRoot, 'facilities'), { recursive: true });
 app.use('/uploads', express.static(uploadRoot));
+// ── Rate limiting ─────────────────────────────────────────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'TooManyRequests', message: 'Too many requests, please try again later.', statusCode: 429 },
+});
+
 // ── Health check ──────────────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', version: '1.0.0', env: process.env.NODE_ENV });
@@ -37,12 +55,13 @@ app.get('/health', (_req, res) => {
 
 // ── API routes ────────────────────────────────────────────────
 const v1 = express.Router();
-v1.use('/auth',       authRoutes);
+v1.use('/auth',       authLimiter, authRoutes);
 v1.use('/facilities', facilitiesRoutes);
 v1.use('/referrals',  referralsRoutes);
 v1.use('/match',      matchingRoutes);
 v1.use('/analytics',  analyticsRoutes);
 v1.use('/users',      usersRoutes);
+v1.use('/error-logs', errorLogsRoutes);
 
 app.use('/api/v1', v1);
 app.use('/api/v1/public', publicRoutes); // No auth needed
